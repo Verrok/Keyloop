@@ -14,12 +14,12 @@ You can hover over keybind and click on it to suggest command
 ![image](https://user-images.githubusercontent.com/26070304/141831414-f55cf569-125c-44e0-8b83-58db7c5a38a7.png)
 
 ### `/keyloop <bind> <delay>`
-If delay equals 0 bind will be **held**
+If delay equals 0 the bind will be **held**
 
 Command autocompelete supports every available keybind for `<bind>` and ticks, seconds, day for `<delay>`
 
 ### `/keyloop off`
-Disables keybind
+Disables the keybind
 
 # Config
 ```textRenderEnabled``` -defines if an overlay with an additional info will be rendered at top left corner
