@@ -25,13 +25,15 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("keyloop")
-public class Keyloop {
+@Mod(KeyLoop.MOD_ID)
+public class KeyLoop {
+
+    public static final String MOD_ID = "keyloop";
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public Keyloop() {
+    public KeyLoop() {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading
