@@ -15,6 +15,7 @@ You can hover over keybind and click on it to suggest command
 
 ### `/keyloop <bind> <delay>`
 If delay equals 0 bind will be **held**
+
 Command autocompelete supports every available keybind for `<bind>` and ticks, seconds, day for `<delay>`
 
 ### `/keyloop off`
