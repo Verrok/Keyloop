@@ -35,6 +35,11 @@ Disables the keybind
 ### **1.7.10/1.12.2 backports?**
 
 Maybe, if I have enough time and motivation to write on older versions
+
+### **1.17.1 and newer upgrades?**
+
+Maybe
+
 ### **Fabric version**
 
 No
