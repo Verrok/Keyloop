@@ -1,31 +1,21 @@
-package verrok.keyloop;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+package verrok.keyloop.events;
 
 import joptsimple.internal.Strings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import org.apache.logging.log4j.LogManager;
+import verrok.keyloop.Constants;
+import verrok.keyloop.KeyLoop;
+
+import java.util.Map;
 
 import static net.minecraftforge.eventbus.api.EventPriority.HIGHEST;
-import static net.minecraftforge.eventbus.api.EventPriority.LOWEST;
 
 
 public class ClientHandler
@@ -54,8 +44,8 @@ public class ClientHandler
 
         CompoundNBT data = mc.player.getPersistentData();
 
-        int delay = data.getInt(KeyLoop.MOD_ID + "delay");
-        String stringKeyBind = data.getString(KeyLoop.MOD_ID + "keyBind");
+        int delay = data.getInt(KeyLoop.makeDataKey(Constants.DELAY_KEYWORD));
+        String stringKeyBind = data.getString(KeyLoop.makeDataKey(Constants.KEYBIND_KEYWORD));
 
         if (Strings.isNullOrEmpty(stringKeyBind)) return;
 
@@ -88,8 +78,8 @@ public class ClientHandler
 
         CompoundNBT data = mc.player.getPersistentData();
 
-        int delay = data.getInt(KeyLoop.MOD_ID + "delay");
-        String stringKeyBind = data.getString(KeyLoop.MOD_ID + "keyBind");
+        int delay = data.getInt(KeyLoop.makeDataKey(Constants.DELAY_KEYWORD));
+        String stringKeyBind = data.getString(KeyLoop.makeDataKey(Constants.KEYBIND_KEYWORD));
 
         if (Strings.isNullOrEmpty(stringKeyBind)) return;
         KeyBinding keyBinding = KEYBIND_ARRAY.get("key." + stringKeyBind);
