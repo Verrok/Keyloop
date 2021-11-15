@@ -18,6 +18,8 @@ If delay equals 0 the bind will be **held**
 
 Command autocompelete supports every available keybind for `<bind>` and ticks, seconds, day for `<delay>`
 
+**Note**: some commands such as `jump`, `forward`, `right`, etc. don't support delay more than 0. I don't exactly know if it is Minecraft limitations or not, but I can't fix it for now
+
 ### `/keyloop off`
 Disables the keybind
 
@@ -29,7 +31,6 @@ Disables the keybind
 # Warnings
 - As far as this mod is easy detectable, don't use on servers where is not allowed AFK farming
 - If you run command immediately after a server connection, it won't work. Click the required key and then use a command
-- Some commands such as `jump`, `forward`, `right`, etc. don't support delay more than 0. I don't exactly know if it is Minecraft limitations or not, but I can't fix it for now
 
 # Q&A
 ### **1.7.10/1.12.2 backports?**
