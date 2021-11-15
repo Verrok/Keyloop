@@ -45,6 +45,7 @@ public class KeyLoop {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ClientHandler());
 
         // Why oh why. Why can this not be a thing in the toml or @Mod like it used to be...
         //Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible

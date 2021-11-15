@@ -21,6 +21,8 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.LogManager;
+import verrok.keyloop.ClientHandler;
+import verrok.keyloop.KeyLoop;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class KeyLoopCommand {
     public KeyLoopCommand(CommandDispatcher<CommandSource> dispatcher) {
         Minecraft mc = Minecraft.getInstance();
         NewChatGui gui = mc.ingameGUI.getChatGUI();
+
         List<String> keys = KEYBIND_ARRAY.keySet().stream().map(k -> k.replaceFirst("^key\\.", "")).sorted().collect(Collectors.toList());
 
         dispatcher.register(Commands.literal("keyloop").then(Commands.literal("list").executes((command) -> {
@@ -60,6 +63,21 @@ public class KeyLoopCommand {
 
             return 1;
         })));
+
+        for (String key : keys) {
+            dispatcher.register(
+                    Commands.literal("keyloop")
+                            .then(Commands.literal(key)
+                                    .then(Commands.argument("delay", TimeArgument.func_218091_a()).executes((commands) -> {
+                int delay = IntegerArgumentType.getInteger(commands, "delay");
+                mc.player.getPersistentData().putInt(KeyLoop.MOD_ID + "delay", delay);
+                mc.player.getPersistentData().putString(KeyLoop.MOD_ID + "keyBind", key);
+
+                return 1;
+            }))));
+
+        }
+
 
 //        for (String key : keys) {
 //            dispatcher.register(Commands

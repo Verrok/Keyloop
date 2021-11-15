@@ -1,14 +1,18 @@
 package verrok.keyloop;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import joptsimple.internal.Strings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
@@ -18,26 +22,22 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.apache.logging.log4j.LogManager;
 
 import static net.minecraftforge.eventbus.api.EventPriority.HIGHEST;
+import static net.minecraftforge.eventbus.api.EventPriority.LOWEST;
 
-/**
- * Client side only code
- * @author Dries007
- */
+
 public class ClientHandler
 {
     private static final Map<String, KeyBinding> KEYBIND_ARRAY = ObfuscationReflectionHelper.getPrivateValue(KeyBinding.class, null, "field_74516_a");
     private final Minecraft mc;
 
-    private int delay;
-    private KeyBinding keyBinding;
     private int i;
 
     public ClientHandler()
     {
         this.mc = Minecraft.getInstance();
-        MinecraftForge.EVENT_BUS.register(this);
         if (KEYBIND_ARRAY == null)
         {
             RuntimeException e = new NullPointerException("KEYBIND_ARRAY was null.");
@@ -45,117 +45,66 @@ public class ClientHandler
         }
     }
 
-    /**
-     * Draw info on the screen
-     */
-    @SubscribeEvent
+
+    @SubscribeEvent()
     public void textRenderEvent(RenderGameOverlayEvent.Text event)
     {
-        if (keyBinding == null) return;
+        if (mc.world == null) return;
+        if (mc.player == null) return;
+
+        CompoundNBT data = mc.player.getPersistentData();
+
+        int delay = data.getInt(KeyLoop.MOD_ID + "delay");
+        String stringKeyBind = data.getString(KeyLoop.MOD_ID + "keyBind");
+
+        if (Strings.isNullOrEmpty(stringKeyBind)) return;
+
         if (mc.currentScreen instanceof MainMenuScreen || mc.currentScreen instanceof ChatScreen)
         {
-            event.getLeft().add("TapeMouse paused. If you want to AFK, use ALT+TAB.");
+            event.getLeft().add("KeyLoop paused.");
+            event.getLeft().add("If you want to AFK, use ALT+TAB.");
+            event.getLeft().add("If your game pausing after ALT+TAB, use F3+P");
+
             return;
         }
-        event.getLeft().add("TapeMouse active: " + keyBinding.getKey().getTranslationKey() + " (" + keyBinding.getKeyDescription().replaceFirst("^key\\.", "") + ')');
-        event.getLeft().add("Delay: " + i + " / " + delay);
+        event.getLeft().add("KeyLoop active: " + stringKeyBind);
+
+        if (delay == 0) {
+            event.getLeft().add("Holding");
+        } else {
+            event.getLeft().add("Delay: " + i + " / " + delay);
+        }
+
     }
 
-    /**
-     * Actually trigger the keybinding.
-     */
     @SubscribeEvent(priority = HIGHEST)
-    public void tickEvent(TickEvent.ClientTickEvent event)
+    public void tickEvent(TickEvent.WorldTickEvent event)
     {
         if (event.phase != TickEvent.Phase.START) return;
         if (mc.currentScreen instanceof MainMenuScreen || mc.currentScreen instanceof ChatScreen) return;
-        if (keyBinding == null) return;
-//        if (i++ < delay) return;
-//        i = 0;
+
+        if (mc.world == null) return;
+        if (mc.player == null) return;
+
+        CompoundNBT data = mc.player.getPersistentData();
+
+        int delay = data.getInt(KeyLoop.MOD_ID + "delay");
+        String stringKeyBind = data.getString(KeyLoop.MOD_ID + "keyBind");
+
+        if (Strings.isNullOrEmpty(stringKeyBind)) return;
+        KeyBinding keyBinding = KEYBIND_ARRAY.get("key." + stringKeyBind);
+
         if (delay == 0) {
             KeyBinding.setKeyBindState(keyBinding.getKey(), true);
+            KeyBinding.onTick(keyBinding.getKey());
             return;
         }
+
+        if (i++ < delay) return;
+        i = 0;
+
         KeyBinding.onTick(keyBinding.getKey());
+
     }
 
-    /**
-     * DIY Client side command
-     */
-    @SubscribeEvent(priority = HIGHEST)
-    public void chatEvent(ClientChatEvent event)
-    {
-        if (!event.getMessage().startsWith("/tapemouse")) return;
-        event.setCanceled(true);
-        String[] args = event.getOriginalMessage().split("\\s");
-        NewChatGui gui = mc.ingameGUI.getChatGUI();
-        gui.addToSentMessages(event.getOriginalMessage());
-        try
-        {
-            handleCommand(gui, args);
-        }
-        catch (Exception e)
-        {
-//            gui.printChatMessage(new StringTextComponent("An error occurred trying to run the tapemouse command:").setStyle(new Style().setColor(TextFormatting.RED)));
-//            gui.printChatMessage(new StringTextComponent(e.toString()).setStyle(new Style().setColor(TextFormatting.RED)));
-        }
-    }
-
-    private void handleCommand(NewChatGui gui, String[] args) throws Exception
-    {
-        switch (args.length)
-        {
-            default:
-//                gui.printChatMessage(new StringTextComponent("TapeMouse help: ").setStyle(new Style().setColor(TextFormatting.AQUA)));
-                gui.printChatMessage(new StringTextComponent("Run '/tapemouse list' to get a list of keybindings."));
-                gui.printChatMessage(new StringTextComponent("Run '/tapemouse off' to stop TapeMouse."));
-                gui.printChatMessage(new StringTextComponent("Run '/tapemouse <binding> <delay>' to start TapeMouse."));
-                gui.printChatMessage(new StringTextComponent("  delay is the number of ticks between every keypress. Set to 0 to hold down the key."));
-                return;
-            case 2:
-                if (args[1].equalsIgnoreCase("off"))
-                {
-                    this.keyBinding = null;
-                    return;
-                }
-                else if (args[1].equalsIgnoreCase("list"))
-                {
-                    List<String> keys = KEYBIND_ARRAY.keySet().stream().map(k -> k.replaceFirst("^key\\.", "")).sorted().collect(Collectors.toList());
-                    gui.printChatMessage(new StringTextComponent(String.join(", ", keys)));
-                }
-                else
-                {
-//                    gui.printChatMessage(new StringTextComponent("Missing delay parameter.").setStyle(new Style().setColor(TextFormatting.RED)));
-                }
-                break;
-            case 3:
-            {
-                KeyBinding keyBinding = KEYBIND_ARRAY.get("key." + args[1]);
-                if (keyBinding == null)
-                {
-                    keyBinding = KEYBIND_ARRAY.get(args[1]);
-                }
-                if (keyBinding == null)
-                {
-//                    gui.printChatMessage(new StringTextComponent(args[1] + " is not a valid keybinding.").setStyle(new Style().setColor(TextFormatting.RED)));
-                    return;
-                }
-                int delay;
-                try
-                {
-                    delay = Integer.parseInt(args[2]);
-                    if (delay < 0) throw new Exception("bad user");
-                }
-                catch (Exception e)
-                {
-                    return;
-                }
-
-                this.delay = delay;
-                this.i = 0;
-                this.keyBinding = keyBinding;
-            }
-            break;
-        }
-    }
 }
