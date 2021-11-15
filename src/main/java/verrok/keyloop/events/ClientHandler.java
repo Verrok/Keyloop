@@ -12,10 +12,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import verrok.keyloop.Constants;
 import verrok.keyloop.KeyLoop;
+import verrok.keyloop.config.KeyLoopConfig;
 
 import java.util.Map;
 
 import static net.minecraftforge.eventbus.api.EventPriority.HIGHEST;
+import static net.minecraftforge.eventbus.api.EventPriority.LOWEST;
 
 
 public class ClientHandler
@@ -36,11 +38,13 @@ public class ClientHandler
     }
 
 
-    @SubscribeEvent()
+    @SubscribeEvent(priority = LOWEST)
     public void textRenderEvent(RenderGameOverlayEvent.Text event)
     {
         if (mc.world == null) return;
         if (mc.player == null) return;
+
+        if (!KeyLoopConfig.textRenderEnabled.get()) return;
 
         CompoundNBT data = mc.player.getPersistentData();
 

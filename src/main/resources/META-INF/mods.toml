@@ -34,7 +34,7 @@ displayName="Keyloop" #mandatory
 authors="verrok" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Holding keybind without focusing on Mincraft
+Holding keybind without focusing on Minecraft
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.keyloop]] #optional

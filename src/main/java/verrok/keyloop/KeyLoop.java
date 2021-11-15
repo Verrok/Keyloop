@@ -6,8 +6,10 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
+import verrok.keyloop.config.KeyLoopConfig;
 import verrok.keyloop.events.ClientHandler;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -22,6 +24,7 @@ public class KeyLoop {
         MinecraftForge.EVENT_BUS.register(new ClientHandler());
 
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, KeyLoopConfig.SPEC, "keyloop.toml");
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientHandler::new);
 
     }
