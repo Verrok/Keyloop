@@ -33,13 +33,13 @@ Disables the keybind
 - If you run command immediately after a server connection, it won't work. Click the required key and then use a command
 
 # Q&A
-### **1.7.10/1.12.2 backports?**
+### **1.12.2 backports?**
 
-Maybe, if I have enough time and motivation to write on older versions
+Maybe
 
 ### **1.17.1 and newer upgrades?**
 
-Maybe
+Later
 
 ### **Fabric version**
 
