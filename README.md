@@ -2,7 +2,7 @@
 
 Mod that provides spam clicking/holding a certain minecraft keybinding
 
-Works **only** on client-side
+Works **only** on client-side and **single** player (server fix will be later)
 
 Original idea and some of the source code was taken from [TapeMouse](https://github.com/dries007/TapeMouse) as its author stopped maintaining it
 # How to
